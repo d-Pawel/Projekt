@@ -1,2 +1,2 @@
-project(hello)
-add_executable(hello main.cpp)
+project (Projekt)
+add_executable (main main.cpp)
