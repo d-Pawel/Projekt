@@ -130,6 +130,7 @@ void encryption::encrypt(){
 		else cryptogram += '1';
 	}
 
+	cryptogram = bn.binToString(cryptogram);
 	cryptogramFile << cryptogram;
 	keyFile << key;
 
@@ -150,6 +151,7 @@ void encryption::decrypt(std::string keyFilePath){
 			key += temp;
 
 		key = bn.stringToBin(key);
+		cryptogram = bn.stringToBin(cryptogram);
 
 		for (int i = 0; i < cryptogram.length(); i++) { //szyfrowanie
 			if (cryptogram.at(i) == key.at(i))
