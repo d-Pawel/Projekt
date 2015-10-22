@@ -1,8 +1,9 @@
 #include "encryption.hpp"
 
+using namespace std;
 
-std::string binary::cast() {
-	std::string r;
+string binary::cast() {
+	string r;
 	char lead = 0;
 	for (int mask = 1 << 7; mask != 0; mask >>= 1) {
 		if ((data & mask)) {
@@ -17,10 +18,10 @@ std::string binary::cast() {
 	return r;
 }
 
-std::vector<std::string> binary::Split(const std::string & str, int splitLength)
+vector<string> binary::Split(const string & str, int splitLength)
 {
 	int NumSubstrings = str.length() / splitLength;
-	std::vector<std::string> ret;
+	vector<string> ret;
 
 	for (auto i = 0; i < NumSubstrings; i++)
 	{
@@ -36,23 +37,23 @@ std::vector<std::string> binary::Split(const std::string & str, int splitLength)
 	return ret;
 }
 
-std::string binary::stringToBin(std::string text){
-	std::string bintext= "";
-	for (std::string::iterator it = text.begin(); it != text.end(); ++it) {
+string binary::stringToBin(string text){
+	string bintext= "";
+	for (string::iterator it = text.begin(); it != text.end(); ++it) {
 		data = (int)*it;
 		bintext += cast();
 	}
 	return bintext;
 }
 
-std::string binary::binToString(std::string bintext)
+string binary::binToString(string bintext)
 {
-	std::string text = "";
+	string text = "";
 	unsigned res,num;
-	std::vector<std::string> letters = Split(bintext,8);
+	vector<string> letters = Split(bintext,8);
 	for (int j = 0; j < letters.size(); j++)
 	{
-		num = std::atoi(letters[j].c_str());
+		num = atoi(letters[j].c_str());
 		res = 0;
 		for (int i = 0; num > 0; ++i)
 		{
@@ -74,34 +75,34 @@ binary::binary(int l) {
 	cast();
 }
 
-binary::binary(std::string text) {
+binary::binary(string text) {
 	stringToBin(text);
 }
 
-std::string & binary::operator=(std::string &r)
+string & binary::operator=(string &r)
 {
 	return r;
 }
 
-std::ostream & operator <<(std::ostream &s, binary b) {
+ostream & operator <<(ostream &s, binary b) {
 	return s << b.cast();
 }
 
 void encryption::generateKey(int length){
 	key = "";
 	for (int i = 0; i < length; i++){
-		char ch = (char)(std::rand() % 95) + 32;
+		char ch = (char)(rand() % 95) + 32;
 		key += ch;
 	}	
 }
 
 encryption::encryption() {}
 
-encryption::encryption(std::string filePath) throw(std::string) {
+encryption::encryption(string filePath) throw(string) {
 	encryption::filePath = filePath;
 	encryption::file.open(filePath);
 	if (!file.good()){
-		std::string ex = "Blad otwarcia pliku!";
+		string ex = "Blad otwarcia pliku!";
 		throw ex;
 	}
 }
@@ -112,10 +113,10 @@ encryption::~encryption()
 }
 
 void encryption::encrypt(){
-	std::ofstream cryptogramFile("cryptogram.txt");
-	std::ofstream keyFile("key.txt");
-	std::string text, binkey, temp = "";
-	while (std::getline(file, temp)) //czyta plik
+	ofstream cryptogramFile("cryptogram.txt");
+	ofstream keyFile("key.txt");
+	string text, binkey, temp = "";
+	while (getline(file, temp)) //czyta plik
 		text += temp + " ";
 
 
@@ -136,18 +137,18 @@ void encryption::encrypt(){
 
 	cryptogramFile.close();
 	keyFile.close();
-	std::cout << "Enryption complete";
+	cout << "Enryption complete";
 }
 
-void encryption::decrypt(std::string keyFilePath){
-	std::string text, key, temp = "";
-	std::ifstream keyFile;
+void encryption::decrypt(string keyFilePath){
+	string text, key, temp = "";
+	ifstream keyFile;
 	keyFile.open(keyFilePath);
 	if (keyFile.good()){
-		std::ofstream textFile("text.txt");
-		while (std::getline(file, temp)) //czyta plik z tekstem zaszyfrowanym
+		ofstream textFile("text.txt");
+		while (getline(file, temp)) //czyta plik z tekstem zaszyfrowanym
 			cryptogram += temp;
-		while (std::getline(keyFile, temp)) //czyta plik z tekstem zaszyfrowanym
+		while (getline(keyFile, temp)) //czyta plik z tekstem zaszyfrowanym
 			key += temp;
 
 		key = bn.stringToBin(key);
@@ -163,11 +164,11 @@ void encryption::decrypt(std::string keyFilePath){
 		textFile << text;
 		textFile.close();
 
-		std::cout << "Decryption complete";
+		cout << "Decryption complete";
 	}
 	else{
 		keyFile.close();
-		std::string ex = "Blad otwarcia pliku!";
+		string ex = "Blad otwarcia pliku!";
 		throw ex;
 	}
 }
