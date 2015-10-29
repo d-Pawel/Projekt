@@ -37,8 +37,8 @@ vector<string> binary::Split(const string & str, int splitLength)
 	return ret;
 }
 
-string binary::stringToBin(string text){
-	string bintext= "";
+string binary::stringToBin(string text) {
+	string bintext = "";
 	for (string::iterator it = text.begin(); it != text.end(); ++it) {
 		data = (int)*it;
 		bintext += cast();
@@ -49,8 +49,8 @@ string binary::stringToBin(string text){
 string binary::binToString(string bintext)
 {
 	string text = "";
-	unsigned res,num;
-	vector<string> letters = Split(bintext,8);
+	unsigned res, num;
+	vector<string> letters = Split(bintext, 8);
 	for (int j = 0; j < letters.size(); j++)
 	{
 		num = atoi(letters[j].c_str());
@@ -64,7 +64,7 @@ string binary::binToString(string bintext)
 		}
 		text += (char)res;
 	}
-		
+
 	return text;
 }
 
@@ -88,12 +88,12 @@ ostream & operator <<(ostream &s, binary b) {
 	return s << b.cast();
 }
 
-void encryption::generateKey(int length){
+void encryption::generateKey(int length) {
 	key = "";
-	for (int i = 0; i < length; i++){
+	for (int i = 0; i < length; i++) {
 		char ch = (char)(rand() % 95) + 32;
 		key += ch;
-	}	
+	}
 }
 
 encryption::encryption() {}
@@ -101,7 +101,7 @@ encryption::encryption() {}
 encryption::encryption(string filePath) throw(string) {
 	encryption::filePath = filePath;
 	encryption::file.open(filePath);
-	if (!file.good()){
+	if (!file.good()) {
 		string ex = "Blad otwarcia pliku!";
 		throw ex;
 	}
@@ -112,7 +112,7 @@ encryption::~encryption()
 	file.close();
 }
 
-void encryption::encrypt(){
+void encryption::encrypt() {
 	ofstream cryptogramFile("cryptogram.txt");
 	ofstream keyFile("key.txt");
 	string text, binkey, temp = "";
@@ -120,13 +120,13 @@ void encryption::encrypt(){
 		text += temp + " ";
 
 
-	generateKey(text.length()); //generuje klucz do zmiennej key klasy
+	generateKey(keyLength); //generuje klucz do zmiennej key klasy
 
 	text = bn.stringToBin(text); //zamiana tekstu na kod binarny
 	binkey = bn.stringToBin(key);
 
-	for (int i = 0; i < text.length(); i++)	{ //szyfrowanie
-		if (text.at(i) == binkey.at(i))
+	for (int i = 0; i < text.length(); i++) { //szyfrowanie
+		if (text.at(i) == binkey.at(i%keyLength))
 			cryptogram += '0';
 		else cryptogram += '1';
 	}
@@ -140,11 +140,11 @@ void encryption::encrypt(){
 	cout << "Enryption complete";
 }
 
-void encryption::decrypt(string keyFilePath){
+void encryption::decrypt(string keyFilePath) {
 	string text, key, temp = "";
 	ifstream keyFile;
 	keyFile.open(keyFilePath);
-	if (keyFile.good()){
+	if (keyFile.good()) {
 		ofstream textFile("text.txt");
 		while (getline(file, temp)) //czyta plik z tekstem zaszyfrowanym
 			cryptogram += temp;
@@ -155,7 +155,7 @@ void encryption::decrypt(string keyFilePath){
 		cryptogram = bn.stringToBin(cryptogram);
 
 		for (int i = 0; i < cryptogram.length(); i++) { //szyfrowanie
-			if (cryptogram.at(i) == key.at(i))
+			if (cryptogram.at(i) == key.at(i%keyLength))
 				text += '0';
 			else text += '1';
 		}
@@ -166,7 +166,7 @@ void encryption::decrypt(string keyFilePath){
 
 		cout << "Decryption complete";
 	}
-	else{
+	else {
 		keyFile.close();
 		string ex = "Blad otwarcia pliku!";
 		throw ex;
