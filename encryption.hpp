@@ -6,12 +6,14 @@
 #include <fstream>
 #include <stdio.h>
 #include <vector>
+#include <sstream>
+#include <iterator>
 
 class binary {
 	unsigned short data;
 	std::string cast();
 	std::vector<std::string> Split(const std::string& str, int splitLength);
-public:
+public:	
 	binary();
 	binary(int);
 	binary(std::string text);
@@ -25,7 +27,7 @@ public:
 class encryption {
 private:
 	binary bn = binary();
-	const int keyLength = 10;
+	const int keyLength = 100;
 	std::ifstream file;
 	std::string filePath;
 	std::string key;
@@ -37,7 +39,7 @@ public:
 	~encryption();
 	void encrypt();
 	void decrypt(std::string keyFilePath);
-
+	
 };
 
 #endif

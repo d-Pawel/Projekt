@@ -37,8 +37,8 @@ vector<string> binary::Split(const string & str, int splitLength)
 	return ret;
 }
 
-string binary::stringToBin(string text) {
-	string bintext = "";
+string binary::stringToBin(string text){
+	string bintext= "";
 	for (string::iterator it = text.begin(); it != text.end(); ++it) {
 		data = (int)*it;
 		bintext += cast();
@@ -49,8 +49,8 @@ string binary::stringToBin(string text) {
 string binary::binToString(string bintext)
 {
 	string text = "";
-	unsigned res, num;
-	vector<string> letters = Split(bintext, 8);
+	unsigned res,num;
+	vector<string> letters = Split(bintext,8);
 	for (int j = 0; j < letters.size(); j++)
 	{
 		num = atoi(letters[j].c_str());
@@ -64,7 +64,7 @@ string binary::binToString(string bintext)
 		}
 		text += (char)res;
 	}
-
+		
 	return text;
 }
 
@@ -88,20 +88,20 @@ ostream & operator <<(ostream &s, binary b) {
 	return s << b.cast();
 }
 
-void encryption::generateKey(int length) {
+void encryption::generateKey(int length){
 	key = "";
-	for (int i = 0; i < length; i++) {
+	for (int i = 0; i < length; i++){
 		char ch = (char)(rand() % 95) + 32;
 		key += ch;
-	}
+	}	
 }
 
 encryption::encryption() {}
 
 encryption::encryption(string filePath) throw(string) {
 	encryption::filePath = filePath;
-	encryption::file.open(filePath);
-	if (!file.good()) {
+	encryption::file.open(filePath, std::ios_base::binary);
+	if (!file.good()){
 		string ex = "Blad otwarcia pliku!";
 		throw ex;
 	}
@@ -112,61 +112,100 @@ encryption::~encryption()
 	file.close();
 }
 
-void encryption::encrypt() {
-	ofstream cryptogramFile("cryptogram.txt");
-	ofstream keyFile("key.txt");
+void encryption::encrypt(){
+	ofstream cryptogramFile("cryptogram.bin", std::ios::binary);
+	ofstream keyFile("key.bin", std::ios::binary);
 	string text, binkey, temp = "";
-	while (getline(file, temp)) //czyta plik
-		text += temp + " ";
 
+	// copies all data into buffer
 
-	generateKey(keyLength); //generuje klucz do zmiennej key klasy
+	vector<char> buffer((
+		istreambuf_iterator<char>(file)),
+		(istreambuf_iterator<char>()));
 
-	text = bn.stringToBin(text); //zamiana tekstu na kod binarny
-	binkey = bn.stringToBin(key);
+	if (!buffer.empty()){
+		string str(buffer.begin(), buffer.end());
+		generateKey(keyLength); //generuje klucz do zmiennej key klasy
+		text = bn.stringToBin(str); //zamiana tekstu na kod binarny
+		binkey = bn.stringToBin(key);
 
-	for (int i = 0; i < text.length(); i++) { //szyfrowanie
-		if (text.at(i) == binkey.at(i%keyLength))
-			cryptogram += '0';
-		else cryptogram += '1';
-	}
-
-	cryptogram = bn.binToString(cryptogram);
-	cryptogramFile << cryptogram;
-	keyFile << key;
-
-	cryptogramFile.close();
-	keyFile.close();
-	cout << "Enryption complete";
-}
-
-void encryption::decrypt(string keyFilePath) {
-	string text, key, temp = "";
-	ifstream keyFile;
-	keyFile.open(keyFilePath);
-	if (keyFile.good()) {
-		ofstream textFile("text.txt");
-		while (getline(file, temp)) //czyta plik z tekstem zaszyfrowanym
-			cryptogram += temp;
-		while (getline(keyFile, temp)) //czyta plik z tekstem zaszyfrowanym
-			key += temp;
-
-		key = bn.stringToBin(key);
-		cryptogram = bn.stringToBin(cryptogram);
-
-		for (int i = 0; i < cryptogram.length(); i++) { //szyfrowanie
-			if (cryptogram.at(i) == key.at(i%keyLength))
-				text += '0';
-			else text += '1';
+		for (int i = 0; i < text.length(); i++) { //szyfrowanie
+			if (text.at(i) == binkey.at(i%keyLength))
+				cryptogram += '0';
+			else cryptogram += '1';
 		}
 
-		text = bn.binToString(text);
-		textFile << text;
-		textFile.close();
+		cryptogram = bn.binToString(cryptogram);
+		copy(cryptogram.begin(), cryptogram.end(), ostreambuf_iterator<char>(cryptogramFile));
+		copy(key.begin(), key.end(), ostreambuf_iterator<char>(keyFile));
 
-		cout << "Decryption complete";
+		cout << "Enryption complete" << endl;
 	}
 	else {
+		cout << "File is empty" << endl;
+	}
+	
+	cryptogramFile.close();
+	keyFile.close();
+
+}
+
+void encryption::decrypt(string keyFilePath){
+	string text, key, temp = "";
+	ifstream keyFile;
+	keyFile.open(keyFilePath, std::ios_base::binary);
+	if (keyFile.good()){
+		
+
+		vector<char> buffer((
+			istreambuf_iterator<char>(file)),
+			(istreambuf_iterator<char>()));
+
+		if (!buffer.empty()) {
+			string str(buffer.begin(), buffer.end());
+
+			vector<char> bufferkey((
+				istreambuf_iterator<char>(keyFile)),
+				(istreambuf_iterator<char>()));
+
+			string key(bufferkey.begin(), bufferkey.end());
+
+			cryptogram = str;
+			key = bn.stringToBin(key);
+			cryptogram = bn.stringToBin(cryptogram);
+
+			for (int i = 0; i < cryptogram.length(); i++) { //szyfrowanie
+				if (cryptogram.at(i) == key.at(i%keyLength))
+					text += '0';
+				else text += '1';
+			}
+
+			text = bn.binToString(text);
+			//istringstream f(text);
+			//string line;
+			//getline(f, line);
+
+			//Tymczasowe rozwiazanie
+			string extension;
+			cout << "Podaj rozszerzenie pliku: ";
+			cin >> extension;
+			//--------------------
+
+			ofstream textFile("plik." + extension, std::ios_base::binary);
+			std::copy(text.begin(), text.end(), std::ostreambuf_iterator<char>(textFile));
+			textFile.close();
+
+			cout << "Decryption complete" << endl;
+			textFile.close();
+		}
+		else {
+			cout << "File is empty" << endl;
+		}
+		
+		keyFile.close();
+		
+	}
+	else{
 		keyFile.close();
 		string ex = "Blad otwarcia pliku!";
 		throw ex;
