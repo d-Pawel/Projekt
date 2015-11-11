@@ -11,7 +11,7 @@ if __name__ == "__main__":
     BASE_PATH=os.path.dirname(os.path.abspath(__file__))
     #print (BASE_PATH)
     #name = input ("Podaj nazwe folderu ze zdjeciami: ")
-    BASE_PATH = BASE_PATH + '\images'
+    BASE_PATH = BASE_PATH + '\images\\faces'
     print (BASE_PATH)
     f = open('faces.csv', 'w+')
     label = 0 
