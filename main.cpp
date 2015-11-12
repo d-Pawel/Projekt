@@ -1,52 +1,89 @@
-#include <opencv2/core/core.hpp>
-#include "opencv2/opencv.hpp"
-#include <opencv2/highgui/highgui.hpp>
+#include "encryption.hpp"
+#include "Camera.hpp"
+#include "ImageProcessing.hpp"
 #include <iostream>
+#include <ctime>
+#include <direct.h>
 
-using namespace cv;
 using namespace std;
 
-string faceCascadeName = "haarcascade_frontalface_alt.xml";
-CascadeClassifier faceCascade;
 
-void detectFace(Mat img);
-
-int main(int argc, char** argv)
+int main()
 {
-	if (!faceCascade.load(faceCascadeName)) {        //£adowanie pliku ze sprawdzeniem poprawnoci 
-		cout << "Nie znaleziono pliku " << faceCascadeName;
-		return -2;
+	srand(time(NULL));
+
+
+	char plik_wejsciowy[20];
+	char plik_haslo[20];
+
+
+	encryption *en;
+	Camera *cam;
+	ImageProcessing *imgProcess;
+
+	int i = 1;
+
+	while (i != 0) {
+
+
+		cout << "1.Szyfruj\n2.Deszyfruj\n3.Zapisz twarz\n4.utworz uzytkownika\n";
+		cin >> i;
+		switch (i)
+		{
+		case 1:
+			try
+			{
+				cout << "Podaj sciezke pliku do zaszyfrowania: ";
+				cin >> plik_wejsciowy;
+				en = new encryption(plik_wejsciowy);
+				en->encrypt();
+				delete en;
+			}
+			catch (string ex)
+			{
+				cout << ex;
+			}
+			getchar();
+			break;
+
+		case 2:
+			try {
+				cout << "Podaj sciezke pliku do rozszyfrowania: ";
+				cin >> plik_wejsciowy;
+				cout << "Podaj sciezke pliku z kluczem: ";
+				cin >> plik_haslo;
+				en = new encryption(plik_wejsciowy);
+				en->decrypt(plik_haslo);
+				delete en;
+			}
+			catch (string ex) {
+				cout << ex;
+			}
+			getchar();
+			break;
+		case 3:
+			imgProcess = new ImageProcessing();
+			imgProcess->saveFace("images/0.jpg","twarz.jpg");
+			break;
+		case 4: {
+			string user;
+			cout << "Podaj nazwe uzytkownika: ";
+			cin >> user;
+			string path = user;
+			user = "images/" + user;
+			_mkdir(user.c_str());
+			cam = new Camera();
+			cam->cameraStart(path);
+
+			break; }
+
+		default:
+			break;
+		}
 	}
 
-	VideoCapture cap(0); // otwarcie domyslnej kamery oraz sprawdzenie
-	if (!cap.isOpened())
-	{
-		cout << "Brak podlaczonej kamery"; return -1;
-	}	
 
-	for (;;)
-	{
-		vector<Rect> faces;
-		Mat frame;		
-		cap >> frame; // wczytanie klatki z kamery
-		detectFace(frame);
-		if (waitKey(30) >= 0) break;
-	}
 
-	// autoatyczne wylaczenie kamery w destruktorze
+	getchar();
 	return 0;
-}
-
-void detectFace(Mat frame) {
-	vector<Rect> faces;                            //Utworzenie bufora na twarze 
-	Mat greyFrame;                                //Utworzenie bufora na obrazek w odcieniach szarosci 
-	Mat detectedFace;
-	cvtColor(frame, greyFrame, CV_BGR2GRAY);                //Konwersja obrazu do odcieni szarosci 
-	faceCascade.detectMultiScale(greyFrame, faces, 1.1, 3, 0 | CV_HAAR_SCALE_IMAGE, Size(50, 50)); //wykrycie twarzy
-	for (unsigned i = 0; i < faces.size(); i++) {
-		Rect rectFace(faces[i]);    //Kwadrat okreslaj¹cy twarz ellipse( img, center, Size( faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, Scalar( 255, 120, 12 ), 2, 2, 0 );							  
-		rectangle(frame, rectFace, Scalar(120, 5, 86), 2, 2, 0); 
-		detectedFace = greyFrame(faces[i]);
-	}	
-	imshow("Camera", frame);                         
 }
