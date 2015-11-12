@@ -1,23 +1,12 @@
-#ifndef encryption_hpp
-#define encryption_hpp
+#ifndef Encryption_hpp
+#define Encryption_hpp
 
+#include "binary.hpp"
+#include <string>
 #include <fstream>
 #include <vector>
 
-class binary {
-	unsigned short data;
-	std::string cast();
-	std::vector<std::string> Split(const std::string& str, int splitLength);
-public:
-	binary();
-	binary(int);
-	binary(std::string text);
-	std::string stringToBin(std::string text);
-	std::string binToString(std::string bintext);
-	//template <class T> binary(const T& d) : data(d) {}
-	friend std::ostream & operator <<(std::ostream &, binary);
-	std::string & binary::operator =(std::string&);
-};
+
 
 class encryption {
 private:
@@ -33,9 +22,7 @@ public:
 	encryption(std::string filePath) throw(std::string);
 	~encryption();
 	void encrypt();
-	void decrypt(std::string keyFilePath);
-
+	void decrypt(std::string keyFilePath);	
 };
 
 #endif
-#pragma once
