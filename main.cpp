@@ -1,6 +1,7 @@
 #include "encryption.hpp"
 #include "Camera.hpp"
 #include "ImageProcessing.hpp"
+#include "FaceRecognition.hpp"
 #include <iostream>
 #include <ctime>
 #include <direct.h>
@@ -20,13 +21,14 @@ int main()
 	encryption *en;
 	Camera *cam;
 	ImageProcessing *imgProcess;
+	FaceRecognition *rec;
 
 	int i = 1;
 
 	while (i != 0) {
 
 
-		cout << "1.Szyfruj\n2.Deszyfruj\n3.Zapisz twarz\n4.utworz uzytkownika\n";
+		cout << "1.Szyfruj\n2.Deszyfruj\n3.Zapisz twarz\n4.Utworz uzytkownika\n5.Utworz zdjecie do rozpoznania\n6.Rozpoznaj uzytkownika\n";
 		cin >> i;
 		switch (i)
 		{
@@ -70,12 +72,19 @@ int main()
 			cout << "Podaj nazwe uzytkownika: ";
 			cin >> user;
 			string path = user;
-			user = "images/" + user;
+			user = "images/faces/" + user;
 			_mkdir(user.c_str());
 			cam = new Camera();
-			cam->cameraStart(path);
-
+			cam->cameraCreateUser(path);
 			break; }
+		case 5:
+			cam = new Camera();
+			cam->cameraRecognizeUser();
+			break;
+		case 6:
+			rec = new FaceRecognition();
+			rec->recognize();
+			break;
 
 		default:
 			break;
