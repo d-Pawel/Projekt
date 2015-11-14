@@ -28,7 +28,7 @@ int main()
 	while (i != 0) {
 
 
-		cout << "1.Szyfruj\n2.Deszyfruj\n3.Zapisz twarz\n4.Utworz uzytkownika\n5.Utworz zdjecie do rozpoznania\n6.Rozpoznaj uzytkownika\n";
+		cout << "1.Szyfruj\n2.Deszyfruj\n3.Zapisz twarz\n4.Utworz uzytkownika\n5.Rozpoznaj uzytkownika\n";
 		cin >> i;
 		switch (i)
 		{
@@ -78,10 +78,9 @@ int main()
 			cam->cameraCreateUser(path);
 			break; }
 		case 5:
+			_mkdir("images/temp");
 			cam = new Camera();
 			cam->cameraRecognizeUser();
-			break;
-		case 6:
 			rec = new FaceRecognition();
 			rec->recognize();
 			break;
