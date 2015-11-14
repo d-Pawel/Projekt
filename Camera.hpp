@@ -5,7 +5,8 @@
 
 class Camera {
 public:
-	void cameraStart(std::string path);
+	void cameraCreateUser(std::string path);
+	void cameraRecognizeUser();
 };
 
 #endif CAMERA_HPP
