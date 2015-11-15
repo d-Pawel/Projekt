@@ -6,7 +6,6 @@ include_directories(
      ${OpenCV_INCLUDE_DIRS}
 )
 set( sources
-	main.cpp
 	Encryption.cpp
 	ImageProcessing.cpp
 	FaceRecognition.cpp
@@ -20,7 +19,7 @@ set( headers
 	Binary.hpp
 	Camera.hpp
 )	
-add_executable(Projekt
+add_executable(Projekt main.cpp
 	${sources}
 	${headers}     
 )
