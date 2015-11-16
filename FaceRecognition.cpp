@@ -5,7 +5,7 @@ using namespace cv;
 using namespace cv::face;
 using namespace std;
 
-void FaceRecognition::recognize() {
+int FaceRecognition::recognize() {
 	string fn_csv = string("faces.csv"); 
 	vector<Mat> images;
 	vector<int> labels;
@@ -40,14 +40,16 @@ void FaceRecognition::recognize() {
 	model->predict(testSample, predictedLabel, predictedConfidence);
 	cout << "Predicted class = " << predictedLabel << endl;
 	cout << "Predicted confidence = " << predictedConfidence << endl;
-	int nameIndex = 0;
-	while (labels[nameIndex] != predictedLabel) nameIndex++;
 	if (predictedConfidence > staticPredictedConfidence) {
+		predictedLabel = -1;
 		cout << "Nie rozpoznano uzytkownika." << endl;
 	}
 	else {
+		int nameIndex = 0;
+		while (labels[nameIndex] != predictedLabel) nameIndex++;
 		cout << "Witaj, " << names[nameIndex] << "!" << endl;
 	}
+	return predictedLabel;
 }
 
 void FaceRecognition::read_csv(const std::string & filename, std::vector<cv::Mat>& images, std::vector<int>& labels, std::vector<std::string>& names, char separator) {
