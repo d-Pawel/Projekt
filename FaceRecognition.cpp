@@ -1,11 +1,12 @@
 #include "FaceRecognition.hpp"
+#define staticPredictedConfidence 10.0 // prog dokladnosci rozpoznawania twarzy. 0.0 oznacza wymagana idealna dokladnosc
 
 using namespace cv;
 using namespace cv::face;
 using namespace std;
 
 void FaceRecognition::recognize() {
-	string fn_csv = string("faces.csv"); // ustawic uniwersalna sciezke!!!!!!!!
+	string fn_csv = string("faces.csv"); 
 	vector<Mat> images;
 	vector<int> labels;
 	vector<string> names;
@@ -27,18 +28,26 @@ void FaceRecognition::recognize() {
 	}
 
 	//zdjecie do rozpoznawania
-	Mat testSample = imread("images/temp/temp.jpg", 0); //sciezka !!!!!!!!!
+	Mat testSample = imread("images/temp/temp.jpg", 0); 
 
-																						  //trenowanie algorytmu
+	//trenowanie algorytmu
 	Ptr<FaceRecognizer> model = createLBPHFaceRecognizer();
 	model->train(images, labels);
 
 	//proba rozpoznania
-	int predictedLabel = model->predict(testSample);
+	int predictedLabel = -1;
+	double predictedConfidence = 0.0;
+	model->predict(testSample, predictedLabel, predictedConfidence);
 	cout << "Predicted class = " << predictedLabel << endl;
-	int i = 0;
-	while (labels[i] != predictedLabel) i++;
-	cout << "Witaj, " << names[i] << "!" << endl;
+	cout << "Predicted confidence = " << predictedConfidence << endl;
+	int nameIndex = 0;
+	while (labels[nameIndex] != predictedLabel) nameIndex++;
+	if (predictedConfidence > staticPredictedConfidence) {
+		cout << "Nie rozpoznano uzytkownika." << endl;
+	}
+	else {
+		cout << "Witaj, " << names[nameIndex] << "!" << endl;
+	}
 }
 
 void FaceRecognition::read_csv(const std::string & filename, std::vector<cv::Mat>& images, std::vector<int>& labels, std::vector<std::string>& names, char separator) {
