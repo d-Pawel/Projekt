@@ -1,7 +1,7 @@
 #ifndef Encryption_hpp
 #define Encryption_hpp
 
-#include "binary.hpp"
+#include "Binary.hpp"
 #include <string>
 #include <fstream>
 #include <vector>
@@ -21,8 +21,8 @@ public:
 	encryption();
 	encryption(std::string filePath) throw(std::string);
 	~encryption();
-	void encrypt();
-	void decrypt(std::string keyFilePath);	
+	void encrypt(std::string path);
+	void decrypt(std::string keyFilePath, std::string path);	
 };
 
 #endif

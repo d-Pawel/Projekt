@@ -6,7 +6,7 @@
 class ImageProcessing {
 public:
 	ImageProcessing();
-	void saveFace(std::string path, std::string name);
+	void saveFace(cv::Mat, std::string name);
 	cv::Mat detectFace(cv::Mat frame);
 private:
 	std::string kaskadaDoRozpoznaniaTwarzy = "haarcascade_frontalface_alt.xml";

@@ -30,9 +30,9 @@ encryption::~encryption()
 	file.close();
 }
 
-void encryption::encrypt(){
-	ofstream cryptogramFile("cryptogram.bin", std::ios::binary);
-	ofstream keyFile("key.bin", std::ios::binary);
+void encryption::encrypt(string path){
+	ofstream cryptogramFile((path+"cryptogram.bin"), std::ios::binary);
+	ofstream keyFile((path+"key.bin"), std::ios::binary);
 	string text, binkey, temp = "";
 
 	size_t found = filePath.find_last_of(".");
@@ -71,7 +71,7 @@ void encryption::encrypt(){
 
 }
 
-void encryption::decrypt(string keyFilePath){
+void encryption::decrypt(string keyFilePath, string path){
 	string text, key, temp = "";
 	ifstream keyFile;
 	keyFile.open(keyFilePath, std::ios_base::binary);
@@ -109,7 +109,7 @@ void encryption::decrypt(string keyFilePath){
 			text.replace(0, extension.find_last_of("\r") + 2, "");
 			extension.replace(extension.find_last_of("\r"), 2, "");
 			
-			ofstream textFile("plik." + extension, std::ios_base::binary);
+			ofstream textFile(path + "plik2." + extension, std::ios_base::binary);
 			std::copy(text.begin(), text.end(), std::ostreambuf_iterator<char>(textFile));
 			textFile.close();
 

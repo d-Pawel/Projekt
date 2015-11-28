@@ -19,10 +19,12 @@ void Camera::cameraCreateUser(string path) {
 
 		if ((key = waitKey(30)) >= 0) {
 			string s = to_string(i);
-			string name = "images/faces/"+path+"/"+ s + ".jpg";
+			string name = "images/users/"+path+"/"+ s + ".jpg";
 			if (key == 13) {			//zapisanie zdjecia po wcisnieciu Enter
 				imwrite(name, frame);
 				i++;
+				string name = "images/faces/" + path + "/" + s + ".jpg";
+				imgProcess->saveFace(frame, name);
 			}
 			if (key == 27) break;					//zamkniecie kamery po wcisnieciu Escape
 		}
@@ -43,7 +45,7 @@ void Camera::cameraRecognizeUser() {
 
 		if ((key = waitKey(30)) >= 0) {			
 			string name = "images/temp/temp.jpg";
-			imwrite(name, frame);
+			imgProcess->saveFace(frame, name);
 			break;					//zamkniecie kamery po wcisnieciu Escape
 		}
 		frame = imgProcess->detectFace(frame);

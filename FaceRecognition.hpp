@@ -8,7 +8,7 @@
 
 class FaceRecognition {
 public:
-	void recognize();
+	std::string recognize();
 private:
 	static void read_csv(const std::string& filename, std::vector<cv::Mat>& images, std::vector<int>& labels, std::vector<std::string>& names, char separator = ';');
 };
