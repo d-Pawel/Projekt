@@ -14,12 +14,35 @@ void encryption::generateKey(int length){
 	}	
 }
 
+void encryption::generateKeyByLogin() {
+	key = "";
+	int loginLen = userLogin.length();
+	encryption::keyLength = loginLen;
+	key = userLogin;
+	/*int* letters = new int[loginLen];
+	for (unsigned i = 0; i < loginLen; ++i)
+	{
+	letters[i] = (int)userLogin.at(i) * loginLen;
+	}*/
+}
+
 encryption::encryption() {}
 
 encryption::encryption(string filePath) throw(string) {
 	encryption::filePath = filePath;
 	encryption::file.open(filePath, std::ios_base::binary);
 	if (!file.good()){
+		string ex = "Blad otwarcia pliku!";
+		throw ex;
+	}
+}
+
+encryption::encryption(std::string filePath, std::string userLogin) throw(std::string)
+{
+	encryption::userLogin = userLogin;
+	encryption::filePath = filePath;
+	encryption::file.open(filePath, std::ios_base::binary);
+	if (!file.good()) {
 		string ex = "Blad otwarcia pliku!";
 		throw ex;
 	}
@@ -32,7 +55,7 @@ encryption::~encryption()
 
 void encryption::encrypt(string path){
 	ofstream cryptogramFile((path+"cryptogram.bin"), std::ios::binary);
-	ofstream keyFile((path+"key.bin"), std::ios::binary);
+	//ofstream keyFile((path+"key.bin"), std::ios::binary);
 	string text, binkey, temp = "";
 
 	size_t found = filePath.find_last_of(".");
@@ -45,7 +68,8 @@ void encryption::encrypt(string path){
 	if (!buffer.empty()){
 		string str(buffer.begin(), buffer.end());
 		str = extension + "\r\n" + str;
-		generateKey(keyLength); 
+		//generateKey(keyLength); 
+		generateKeyByLogin();
 		text = bn.stringToBin(str); 
 		binkey = bn.stringToBin(key);
 
@@ -58,7 +82,7 @@ void encryption::encrypt(string path){
 
 		cryptogram = bn.binToString(cryptogram);
 		copy(cryptogram.begin(), cryptogram.end(), ostreambuf_iterator<char>(cryptogramFile));
-		copy(key.begin(), key.end(), ostreambuf_iterator<char>(keyFile));
+		//copy(key.begin(), key.end(), ostreambuf_iterator<char>(keyFile));
 
 		cout << "Enryption complete" << endl;
 	}
@@ -67,15 +91,15 @@ void encryption::encrypt(string path){
 	}
 	
 	cryptogramFile.close();
-	keyFile.close();
+	//keyFile.close();
 
 }
 
-void encryption::decrypt(string keyFilePath, string path){
-	string text, key, temp = "";
-	ifstream keyFile;
-	keyFile.open(keyFilePath, std::ios_base::binary);
-	if (keyFile.good()){
+void encryption::decrypt(string path){
+	string text, tempkey, temp = "";
+	//ifstream keyFile;
+	/*keyFile.open(keyFilePath, std::ios_base::binary);
+	if (keyFile.good()){*/
 		
 
 		vector<char> buffer((
@@ -85,18 +109,19 @@ void encryption::decrypt(string keyFilePath, string path){
 		if (!buffer.empty()) {
 			string str(buffer.begin(), buffer.end());
 
-			vector<char> bufferkey((
+			/*vector<char> bufferkey((
 				istreambuf_iterator<char>(keyFile)),
 				(istreambuf_iterator<char>()));
 
-			string key(bufferkey.begin(), bufferkey.end());
+			string key(bufferkey.begin(), bufferkey.end());*/
 
+			generateKeyByLogin();
 			cryptogram = str;
-			key = bn.stringToBin(key);
+			tempkey = bn.stringToBin(key);
 			cryptogram = bn.stringToBin(cryptogram);
 
 			for (int i = 0; i < cryptogram.length(); i++) { //szyfrowanie
-				if (cryptogram.at(i) == key.at(i%keyLength))
+				if (cryptogram.at(i) == tempkey.at(i%keyLength))
 					text += '0';
 				else text += '1';
 			}
@@ -115,16 +140,16 @@ void encryption::decrypt(string keyFilePath, string path){
 
 			cout << "Decryption complete" << endl;
 			textFile.close();
-		}
+		/*}
 		else {
 			cout << "File is empty" << endl;
-		}
+		}*/
 		
-		keyFile.close();
+		//keyFile.close();
 		
 	}
 	else{
-		keyFile.close();
+		//keyFile.close();
 		string ex = "Blad otwarcia pliku!";
 		throw ex;
 	}
