@@ -66,7 +66,7 @@ int main()
 							cout << "Podaj sciezke pliku do zaszyfrowania: ";
 							cin >> plik_wejsciowy;
 							string path = "files/" + login + "/" + plik_wejsciowy;
-							en = new encryption(path);
+							en = new encryption(path,login);
 							string cryptpath = "files/" + login + "/";
 							en->encrypt(cryptpath);
 							delete en;
@@ -81,13 +81,13 @@ int main()
 						try {
 							cout << "Podaj sciezke pliku do rozszyfrowania: ";
 							cin >> plik_wejsciowy;
-							cout << "Podaj sciezke pliku z kluczem: ";
-							cin >> plik_haslo;
+							//cout << "Podaj sciezke pliku z kluczem: ";
+							//cin >> plik_haslo;
 							string path = "files/" + login + "/";
 							string pathcrypt = "files/" + login + "/" + plik_wejsciowy;
-							string pathkey = "files/" + login + "/" + plik_haslo;
-							en = new encryption(pathcrypt);
-							en->decrypt(pathkey, path);
+							//string pathkey = "files/" + login + "/" + plik_haslo;
+							en = new encryption(pathcrypt, login);
+							en->decrypt(path);
 							delete en;
 						}
 						catch (string ex) {
