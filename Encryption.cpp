@@ -41,7 +41,11 @@ encryption::encryption(std::string filePath, std::string userLogin) throw(std::s
 {
 	encryption::userLogin = userLogin;
 	encryption::filePath = filePath;
-	encryption::file.open(filePath, std::ios_base::binary);
+	encryption::fileName = filePath.replace(0, filePath.find_last_of("/") + 1, "");
+	encryption::fileName.replace(filePath.find_last_of("."), encryption::fileName.length(), "");
+	encryption::fileExtension = encryption::filePath.substr(encryption::filePath.find_last_of(".") + 1);
+
+	encryption::file.open(encryption::filePath, std::ios_base::binary);
 	if (!file.good()) {
 		string ex = "Blad otwarcia pliku!";
 		throw ex;
@@ -54,7 +58,7 @@ encryption::~encryption()
 }
 
 void encryption::encrypt(string path){
-	ofstream cryptogramFile((path+"cryptogram.bin"), std::ios::binary);
+	ofstream cryptogramFile((path + userLogin + "_" + fileName + "_" + fileExtension + ".bin"), std::ios::binary);
 	//ofstream keyFile((path+"key.bin"), std::ios::binary);
 	string text, binkey, temp = "";
 
@@ -67,7 +71,7 @@ void encryption::encrypt(string path){
 
 	if (!buffer.empty()){
 		string str(buffer.begin(), buffer.end());
-		str = extension + "\r\n" + str;
+		str = userLogin + "\r\n" + extension + "\r\n" + str;
 		//generateKey(keyLength); 
 		generateKeyByLogin();
 		text = bn.stringToBin(str); 
@@ -128,18 +132,32 @@ void encryption::decrypt(string path){
 
 			text = bn.binToString(text);
 			istringstream f(text);
+			string caption;
 			string extension;
+			getline(f, caption);
 			getline(f, extension);
 
+			text.replace(0, caption.find_last_of("\r") + 2, "");
 			text.replace(0, extension.find_last_of("\r") + 2, "");
 			extension.replace(extension.find_last_of("\r"), 2, "");
+			caption.replace(caption.find_last_of("\r"), 2, "");
 			
-			ofstream textFile(path + "plik2." + extension, std::ios_base::binary);
-			std::copy(text.begin(), text.end(), std::ostreambuf_iterator<char>(textFile));
-			textFile.close();
+			if (userLogin == caption)
+			{
+				ofstream textFile(path + fileName + "." + extension, std::ios_base::binary);
+				std::copy(text.begin(), text.end(), std::ostreambuf_iterator<char>(textFile));
+				textFile.close();
 
-			cout << "Decryption complete" << endl;
-			textFile.close();
+				cout << "Decryption complete" << endl;
+				textFile.close();
+			}
+			else
+			{
+				string ex = "Error: wrong file user";
+				throw ex;
+			}
+
+			
 		/*}
 		else {
 			cout << "File is empty" << endl;

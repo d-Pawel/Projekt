@@ -15,6 +15,8 @@ private:
 	int keyLength = 0;
 	std::ifstream file;
 	std::string filePath;
+	std::string fileName;
+	std::string fileExtension;
 	std::string userLogin;
 	std::string key;
 	std::string cryptogram = "";
