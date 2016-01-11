@@ -71,7 +71,7 @@ void encryption::encrypt(string path){
 
 	if (!buffer.empty()){
 		string str(buffer.begin(), buffer.end());
-		str = userLogin + "\r\n" + extension + "\r\n" + str;
+		str = fileName + "\r\n" + userLogin + "\r\n" + extension + "\r\n" + str;
 		//generateKey(keyLength); 
 		generateKeyByLogin();
 		text = bn.stringToBin(str); 
@@ -132,19 +132,23 @@ void encryption::decrypt(string path){
 
 			text = bn.binToString(text);
 			istringstream f(text);
+			string realfilename;
 			string caption;
 			string extension;
+			getline(f, realfilename);
 			getline(f, caption);
 			getline(f, extension);
 
+			text.replace(0, realfilename.find_last_of("\r") + 2, "");
 			text.replace(0, caption.find_last_of("\r") + 2, "");
 			text.replace(0, extension.find_last_of("\r") + 2, "");
+			realfilename.replace(realfilename.find_last_of("\r"), 2, "");
 			extension.replace(extension.find_last_of("\r"), 2, "");
 			caption.replace(caption.find_last_of("\r"), 2, "");
 			
 			if (userLogin == caption)
 			{
-				ofstream textFile(path + fileName + "." + extension, std::ios_base::binary);
+				ofstream textFile(path + realfilename + "." + extension, std::ios_base::binary);
 				std::copy(text.begin(), text.end(), std::ostreambuf_iterator<char>(textFile));
 				textFile.close();
 
