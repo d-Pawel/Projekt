@@ -36,17 +36,21 @@ void Camera::cameraCreateUser(string path) {
 
 void Camera::cameraRecognizeUser() {
 	VideoCapture cap(0);
+	cap.set(CV_CAP_PROP_FRAME_HEIGHT, 1280);
+	cap.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
 	ImageProcessing *imgProcess;
 	imgProcess = new ImageProcessing();
 	for (;;) {
 		Mat frame;
 		int key;
 		cap >> frame; // wczytanie klatki z kamery
-
-		if ((key = waitKey(30)) >= 0) {			
+		if ((key = waitKey(30)) >= 0) {
 			string name = "images/temp/temp.jpg";
-			imgProcess->saveFace(frame, name);
-			break;					//zamkniecie kamery po wcisnieciu Escape
+			if (key == 13) {			//zapisanie zdjecia po wcisnieciu Enter
+				imgProcess->saveFace(frame, name);
+				break;
+			}
+			if (key == 27) break;					//zamkniecie kamery po wcisnieciu Escape
 		}
 		frame = imgProcess->detectFace(frame);
 		imshow("Camera", frame);

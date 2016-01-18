@@ -17,6 +17,7 @@ using namespace cv;
 		detectedFace = greyFrame(faces[i]);
 	}
 	if (faces.size() != NULL) {
+		resize(detectedFace, detectedFace, Size(300, 300), 0, 0, CV_INTER_CUBIC);		
 		imwrite(name, detectedFace);
 	}
 	else {

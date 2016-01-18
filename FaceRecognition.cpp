@@ -1,5 +1,6 @@
 #include "FaceRecognition.hpp"
-#define staticPredictedConfidence 40.0 // prog dokladnosci rozpoznawania twarzy. 0.0 oznacza wymagana idealna dokladnosc
+#define staticPredictedConfidence 72.0 // prog dokladnosci rozpoznawania twarzy.
+
 
 using namespace cv;
 using namespace cv::face;
@@ -31,30 +32,28 @@ string FaceRecognition::recognize() {
 	Mat testSample = imread("images/temp/temp.jpg", 0); 
 
 	//trenowanie algorytmu
-	Ptr<FaceRecognizer> model = createLBPHFaceRecognizer();
+	Ptr<FaceRecognizer> model = createLBPHFaceRecognizer(1,8,12,12,DBL_MAX);
 	model->train(images, labels);
 
 	//proba rozpoznania
 	int predictedLabel = -1;
 	double predictedConfidence = 0.0;
 	model->predict(testSample, predictedLabel, predictedConfidence);
-	//cout << "Predicted class = " << predictedLabel << endl;
 	cout << "Predicted confidence = " << predictedConfidence << endl;
 
 	
 	if (predictedConfidence > staticPredictedConfidence) {
 		predictedLabel = -1;
 		cout << "Nie rozpoznano uzytkownika." << endl;		
-		return "NULL\n";	//tymczasowe
+		return "NULL";
 	}
 	else {
 		int nameIndex = 0;
 		while (labels[nameIndex] != predictedLabel) nameIndex++;
 		cout << "Witaj, " << names[nameIndex] << "!" << endl;
-		return names[nameIndex];	//tymczasowe
-	}
-	//return predictedLabel;
-	
+		return names[nameIndex];
+
+	}	
 }
 
 void FaceRecognition::read_csv(const std::string & filename, std::vector<cv::Mat>& images, std::vector<int>& labels, std::vector<std::string>& names, char separator) {
